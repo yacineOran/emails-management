@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.ymh.emailmanagement.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,18 +24,21 @@ import com.ymh.emailmanagement.enums.Status;
 
 
 @Controller
-@Transactional//(readOnly = true)
+@Transactional
 public class EmailController {
 	
-	static final int NBR_TOPIC = 5; // A mettre dans une properties
-	
 	@Autowired
-	private EmailRepository emailRepository;
-	
+	private EmailService emailService;
+
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index() {
+		return "index";
+	}
+
 	@RequestMapping(value = "/all-view", method = RequestMethod.GET)
 	public String getList(Model model) {
 
-		List<Email> emails = emailRepository.findAll();
+		List<Email> emails = emailService.findAll();
 		model.addAttribute("emailList", emails);
 		
 		return "emails";
@@ -43,58 +47,31 @@ public class EmailController {
 	@RequestMapping(value = "/view/{status}", method = RequestMethod.GET)
 	public String getListByStatus(Model model, @PathVariable Status status) {
 
-		List<Email> emails = emailRepository.findEmailByStatus(status).collect(Collectors.toList());
-		model.addAttribute("emailList", emails);
+		List<Email> emails = (List<Email>) emailService.findEmailByStatus(status).collect(Collectors.toList());
+
+		if(emails != null && emails.size()>0)
+			model.addAttribute("emailList", emails);
 		
 		return "emails";
 	}
 
 	@RequestMapping(value = "/send", method = RequestMethod.GET)
 	public String sendEmailToQueue(Model model) {
-		Stream<Email> emails = emailRepository.findEmailByStatus(Status.TO_SEND);
-		List<Email> emailsList = emails.map(email -> setSentToQueue(email)).collect(Collectors.toList());
+		Stream<Email> emails = emailService.findEmailByStatus(Status.TO_SEND);
+		List<Email> emailsList = emails.map(email -> emailService.setSentToQueue(email)).collect(Collectors.toList());
 		model.addAttribute("emailList", emailsList);
 		
 		return "emails";
 	}
-	
 
 	@RequestMapping(value = "/add-emails", method = RequestMethod.GET)
 	public String addEmails(Model model) {
+
+		emailService.saveData();
 		
-		saveData();
-		
-		List<Email> emails = emailRepository.findEmailByStatus(Status.TO_SEND).collect(Collectors.toList());
+		List<Email> emails = (List<Email>) emailService.findEmailByStatus(Status.TO_SEND).collect(Collectors.toList());
 		model.addAttribute("emailList", emails);
 		
 		return "emails";
-	}
-
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index() {
-		return "index";
-	}
-
-	private void saveData() {
-		emailRepository.save(new Email(null,"103",TO_SEND,LocalDateTime.now(), "Message 6"));
-		emailRepository.save(new Email(null,"102",SENT_TO_QUEUE,LocalDateTime.now(), "Message 4"));
-		emailRepository.save(new Email(null,"101",TO_SEND,LocalDateTime.now(), "Message 1"));
-		emailRepository.save(new Email(null,"102",TO_SEND,LocalDateTime.now(), "Message 3"));
-		emailRepository.save(new Email(null,"101",TO_SEND,LocalDateTime.now(), "Message 2"));
-		emailRepository.save(new Email(null,"104",TO_SEND,LocalDateTime.now(), "Message 8"));
-		emailRepository.save(new Email(null,"102",TO_SEND,LocalDateTime.now(), "Message 5"));
-		emailRepository.save(new Email(null,"105",TO_SEND,LocalDateTime.now(), "Message 9"));
-		emailRepository.save(new Email(null,"103",SENT_TO_QUEUE,LocalDateTime.now(), "Message 7"));
-		emailRepository.save(new Email(null,"103",Status.SENT_TO_CUSTOMER,LocalDateTime.now(), "Message 8"));
-	}
-
-	// 
-	Email setSentToQueue(Email email){
-		// calcule du modulo
-		Integer numeroClient = Integer.valueOf(email.getCustomerNumber());
-
-		email.setQueueName("Queue_" + ((numeroClient % NBR_TOPIC) + 1));
-		email.setStatus(Status.SENT_TO_QUEUE);
-		return email;
 	}
 }

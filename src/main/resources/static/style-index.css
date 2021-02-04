@@ -59,6 +59,26 @@
     background-color: #3D9970;
 }
 
+/* Modifier */
+.btn--indian-red {
+    border-color: #993d70;
+    color: white;
+    background-color: #993d70;
+}
+
+/* Modifier */
+.btn--light-salmon {
+    border-color: #FFA07A;
+    color: white;
+    background-color: #FFA07A;
+}
+
+/* Modifier */
+.btn--green-2 {
+    border-color: #1D8348;
+    color: white;
+    background-color: #1D8348;
+}
 
 body {
     font-family: "fira-sans-2", sans-serif;
