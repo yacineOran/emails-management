@@ -70,6 +70,11 @@ public class EmailController {
 		return "emails";
 	}
 
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index() {
+		return "index";
+	}
+
 	private void saveData() {
 		emailRepository.save(new Email(null,"103",TO_SEND,LocalDateTime.now(), "Message 6"));
 		emailRepository.save(new Email(null,"102",SENT_TO_QUEUE,LocalDateTime.now(), "Message 4"));

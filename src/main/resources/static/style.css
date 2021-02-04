@@ -10,3 +10,7 @@ body{
 	justify-content: center;
 	background: #6441a5;
 }
+.table--tr--td_bold-green{
+	font-weight: bold;
+	color: green;
+}
