@@ -3,6 +3,7 @@ Solution to manage the scheduling of emails sending
 
 #BackEnd : 
 * Spring boot, Spring Mvc, Spring DATA, Hibernate, HQL, H2
+
 #FrontEnd : 
 * HTML, Tyhmeleaf
 
@@ -13,6 +14,9 @@ Solution to manage the scheduling of emails sending
 * The Customer receives the email in the order of creation in the system
 
 #URL
+*   http://localhost:8080/index
+![img_1.png](img_1.png)
+
 * Url **view-list** : show the list of all messages
 http://localhost:8080/all-view
 
